@@ -585,6 +585,10 @@ class eZHTTPTool
         if ( $port )
             $uri .= ':' . $port;
         $uri .= $path;
+        
+        if ( isset($_SERVER[QUERY_STRING]) && $_SERVER[QUERY_STRING] != '' )
+        	$uri .= '?' . $_SERVER[QUERY_STRING];
+
         return $uri;
     }
 
