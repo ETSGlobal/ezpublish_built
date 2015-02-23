@@ -585,9 +585,17 @@ class eZHTTPTool
         if ( $port )
             $uri .= ':' . $port;
         $uri .= $path;
-        
-        if ( isset($_SERVER[QUERY_STRING]) && $_SERVER[QUERY_STRING] != '' )
-        	$uri .= '?' . $_SERVER[QUERY_STRING];
+
+        if ( isset($_SERVER['QUERY_STRING']) && $_SERVER['QUERY_STRING'] != '' ) {
+            //If the QUERY_STRING only has "redirect" parameter, do not show it in url
+            if (strpos($_SERVER['QUERY_STRING'],'redirect') === false || strpos($_SERVER['QUERY_STRING'],'&')!== false ) {
+                if (parse_url($uri, PHP_URL_QUERY) === null) {
+                    $uri .= '?' . $_SERVER['QUERY_STRING'];
+                } else {
+                    $uri .= '&' . $_SERVER['QUERY_STRING'];
+                }
+            }
+        }
 
         return $uri;
     }
