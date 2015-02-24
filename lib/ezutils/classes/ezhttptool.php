@@ -587,14 +587,17 @@ class eZHTTPTool
         $uri .= $path;
 
         if ( isset($_SERVER['QUERY_STRING']) && $_SERVER['QUERY_STRING'] != '' ) {
-            //If the QUERY_STRING only has "redirect" parameter, do not show it in url
-            if (strpos($_SERVER['QUERY_STRING'],'redirect') === false || strpos($_SERVER['QUERY_STRING'],'&')!== false ) {
-                if (parse_url($uri, PHP_URL_QUERY) === null) {
-                    $uri .= '?' . $_SERVER['QUERY_STRING'];
-                } else {
-                    $uri .= '&' . $_SERVER['QUERY_STRING'];
-                }
+            $parsedQuery = parse_url($uri, PHP_URL_QUERY);
+            if ($parsedQuery !== null) {
+                $uri = str_replace( '?'. $parsedQuery, '', $uri);
             }
+
+            parse_str($parsedQuery, $uriQueryArray);
+            parse_str($_SERVER['QUERY_STRING'], $serverQueryArray);
+            $queryArray = array_merge($serverQueryArray, $uriQueryArray);
+            unset($queryArray['redirect']);
+
+            $uri = $uri . '?' . http_build_query($queryArray);
         }
 
         return $uri;
