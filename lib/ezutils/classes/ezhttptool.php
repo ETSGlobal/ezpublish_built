@@ -585,9 +585,20 @@ class eZHTTPTool
         if ( $port )
             $uri .= ':' . $port;
         $uri .= $path;
-        
-        if ( isset($_SERVER[QUERY_STRING]) && $_SERVER[QUERY_STRING] != '' )
-        	$uri .= '?' . $_SERVER[QUERY_STRING];
+
+        if ( isset($_SERVER['QUERY_STRING']) && $_SERVER['QUERY_STRING'] != '' ) {
+            $parsedQuery = parse_url($uri, PHP_URL_QUERY);
+            if ($parsedQuery !== null) {
+                $uri = str_replace( '?'. $parsedQuery, '', $uri);
+            }
+
+            parse_str($parsedQuery, $uriQueryArray);
+            parse_str($_SERVER['QUERY_STRING'], $serverQueryArray);
+            $queryArray = array_merge($serverQueryArray, $uriQueryArray);
+            unset($queryArray['redirect']);
+
+            $uri = $uri . '?' . http_build_query($queryArray);
+        }
 
         return $uri;
     }
