@@ -782,6 +782,13 @@ if ( $ini->variable( "SiteAccessSettings", "CheckValidity" ) !== 'true' )
         {
             setcookie( 'is_logged_in', 'true', 0, $cookiePath );
         }
+
+        //set a new cookie with no expiration date because we couldn't find a way to set _token cookie expiration date
+        //TODO move this in custom part
+        if ( (!isset( $_COOKIE['_ngToken'] ) && isset($_COOKIE['_token'])) || $_COOKIE['_ngToken'] != $_COOKIE['_token'] )
+        {
+            setcookie( '_ngToken', $_COOKIE['_token'], 0, $cookiePath );
+        }
     }
     else if ( isset( $_COOKIE['is_logged_in'] ) )
     {
