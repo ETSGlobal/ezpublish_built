@@ -255,8 +255,13 @@ class eZContentObjectVersion extends eZPersistentObject
     {
         if ( $this->VersionName !== null )
             return $this->VersionName;
-        $this->VersionName = $this->attribute( 'contentobject' )->versionLanguageName( $this->attribute( 'version' ),
-                                                                                       $lang );
+
+        # EB-7249
+        # PHP Fatal error:  Call to a member function versionLanguageName() on a non-object
+        if (is_object($this->attribute( 'contentobject' ))) {
+            $this->VersionName = $this->attribute('contentobject')->versionLanguageName($this->attribute('version'), $lang);
+        }
+
         if ( $lang !== false )
         {
             $contentObject = $this->contentObject();
@@ -272,6 +277,11 @@ class eZContentObjectVersion extends eZPersistentObject
             {
                 $this->VersionName = $contentObject->name( false, $lang );
             }
+        }
+
+        # EB-7249
+        if ( $this->VersionName === false ) {
+            $this->VersionName = "ERROR EB-7249";
         }
         return $this->VersionName;
     }
