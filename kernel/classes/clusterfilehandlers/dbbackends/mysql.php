@@ -81,7 +81,7 @@ class eZDBFileHandlerMysqlBackend
         $tries = 0;
         while ( $tries < $maxTries )
         {
-            if ( $this->db = mysql_connect( $serverString, $params['user'], $params['pass'], $newLink ) )
+            if ( $this->db = @mysql_connect( $serverString, $params['user'], $params['pass'], $newLink ) )
                 break;
             ++$tries;
         }
